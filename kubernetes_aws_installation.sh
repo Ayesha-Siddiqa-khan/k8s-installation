@@ -112,15 +112,15 @@ kubectl config view --raw | \
   sed '/certificate-authority-data/d'
 
 
-  Step 1 — Switch back to the private IP for local use:
-bashsudo sed -i 's|https://100.55.130.50:6443|https://10.0.0.40:6443|g' ~/.kube/config
-Step 2 — Test it works:
-bashkubectl get svc -n tictactoe
-This should now work because you're ON the control plane itself, so it can reach 10.0.0.40 directly (the private IP).
+  #Step 1 — Switch back to the private IP for local use:
+sudo sed -i 's|https://100.55.130.50:6443|https://10.0.0.40:6443|g' ~/.kube/config
+  #Step 2 — Test it works:
+kubectl get svc -n tictactoe
+#This should now work because you're ON the control plane itself, so it can reach 10.0.0.40 directly (the private IP).
 
-Then patch the service to NodePort:
+#Then patch the service to NodePort:
 bashkubectl patch svc tictactoe-svc -n tictactoe \
   -p '{"spec": {"type": "NodePort", "ports": [{"port": 80, "targetPort": 5000, "nodePort": 30080}]}}'
-Check it:
-bashkubectl get svc -n tictactoe
+#Check it:
+kubectl get svc -n tictactoe
 kubectl get pods -n tictactoe

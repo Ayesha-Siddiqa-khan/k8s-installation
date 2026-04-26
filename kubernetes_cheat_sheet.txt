@@ -1,0 +1,316 @@
+KUBERNETES (K8s) COMMANDS CHEAT SHEET – FULL DEVOPS EDITION
+
+1. Basic Cluster Commands
+kubectl version
+Show client + server K8s version.
+
+kubectl cluster-info
+See cluster master & DNS info.
+
+kubectl get all
+List all resources (pods, svc, deployments, etc.) in default namespace.
+
+
+2. Working With Contexts
+kubectl config get-contexts
+List all contexts (clusters).
+
+kubectl config use-context dev
+Switch to another cluster.
+
+kubectl config current-context
+Show which cluster you are using.
+
+
+3. Namespaces
+kubectl get namespaces
+List namespaces.
+
+kubectl create namespace dev
+Create namespace.
+
+kubectl delete namespace dev
+Delete namespace.
+
+kubectl config set-context --current --namespace=dev
+Set default namespace.
+
+
+4. Pods
+kubectl get pods
+List pods.
+
+kubectl get pods -o wide
+Show pod IP, node, etc.
+
+kubectl describe pod pod-name
+Detailed pod info & events.
+
+kubectl logs pod-name
+View logs.
+
+kubectl logs -f pod-name
+Follow live logs.
+
+kubectl exec -it pod-name -- bash
+Enter pod terminal.
+
+kubectl delete pod pod-name
+Delete a pod.
+
+
+5. Deployments
+kubectl get deployments
+List deployments.
+
+kubectl create deployment web --image=nginx
+Create deployment.
+
+kubectl scale deployment web --replicas=5
+Scale number of pods.
+
+kubectl rollout status deployment/web
+Check deployment rollout status.
+
+kubectl rollout undo deployment/web
+Rollback to previous version.
+
+kubectl delete deployment web
+Delete deployment.
+
+
+6. ReplicaSets
+kubectl get rs
+List ReplicaSets.
+
+kubectl describe rs rs-name
+ReplicaSet details.
+
+
+7. Services
+kubectl get svc
+List services.
+
+kubectl expose deployment web --type=NodePort --port=80
+Expose deployment as a service.
+
+kubectl describe svc web
+Service details.
+
+kubectl get svc -o wide
+See service cluster IP & ports.
+
+
+8. ConfigMaps
+kubectl create configmap app-config --from-literal=env=prod
+Create ConfigMap.
+
+kubectl create configmap myconfig --from-file=config.properties
+Create from file.
+
+kubectl get configmaps
+List ConfigMaps.
+
+kubectl describe configmap app-config
+View config details.
+
+
+9. Secrets
+kubectl create secret generic db-secret --from-literal=password=1234
+Create secret.
+
+kubectl create secret generic tls-secret --from-file=server.crt --from-file=server.key
+Create TLS secret.
+
+kubectl get secrets
+List secrets.
+
+kubectl describe secret db-secret
+Describe secret.
+
+
+10. YAML Apply, Update & Delete
+kubectl apply -f deployment.yaml
+Apply or update resource.
+
+kubectl delete -f deployment.yaml
+Delete resource.
+
+kubectl edit deployment web
+Edit resource live in editor.
+
+
+11. Nodes & Cluster Info
+kubectl get nodes
+List nodes.
+
+kubectl get nodes -o wide
+Node details (OS, internal IP).
+
+kubectl describe node node1
+Node details (taints, capacity).
+
+kubectl drain node1 --ignore-daemonsets
+Drain node safely.
+
+kubectl cordon node1
+Mark node unschedulable.
+
+kubectl uncordon node1
+Mark node schedulable.
+
+
+12. Resource Usage
+kubectl top pods
+CPU & memory usage of pods.
+
+kubectl top nodes
+CPU & memory usage of nodes.
+(Metrics server required)
+
+
+13. Taints & Tolerations
+Add taint:
+kubectl taint nodes node1 key=value:NoSchedule
+
+Remove taint:
+kubectl taint nodes node1 key=value:NoSchedule-
+
+Used for:
+✔️ Dedicate nodes
+✔️ Restrict workloads
+✔️ Isolation
+
+
+14. Labels & Selectors
+kubectl label pod web app=frontend
+Add label.
+
+kubectl get pods -l app=frontend
+Filter with label.
+
+kubectl label pod web app-
+Remove label.
+
+
+15. Port Forwarding
+kubectl port-forward pod/mypod 8080:80
+Access pod locally.
+Common for debugging APIs.
+
+
+16. Ingress
+kubectl get ingress
+List ingress rules.
+
+kubectl describe ingress my-ingress
+Ingress details.
+
+
+17. StatefulSets
+kubectl get statefulsets
+List StatefulSets.
+
+kubectl describe statefulset mysql
+Stateful app details.
+
+Used for:
+Databases
+Kafka
+ElasticSearch
+
+
+18. DaemonSets
+kubectl get daemonsets
+List DaemonSets.
+
+Used for:
+Logging agents
+Monitoring agents
+
+
+19. Jobs & CronJobs
+kubectl create job myjob --image=busybox
+Create Job.
+
+kubectl create cronjob backup --image=busybox --schedule="*/5 * * * *"
+Create CronJob.
+
+kubectl get jobs
+List jobs.
+
+kubectl get cronjobs
+List CronJobs.
+
+
+20. Pod Debugging
+kubectl describe pod web
+Check events.
+
+kubectl logs pod --previous
+Check logs of crashed container.
+
+kubectl exec -it web -- sh
+Debug inside pod.
+
+kubectl get pod web -o yaml
+View complete pod spec.
+
+
+21. Troubleshooting Cluster
+kubectl get events
+Cluster-wide events.
+
+kubectl get endpoints
+Check service endpoints.
+
+kubectl get componentstatus
+Master component status (older K8s).
+
+kubectl get networkpolicies
+Check network restrictions.
+
+
+22. Network Policies
+kubectl get netpol
+List policies.
+
+kubectl describe netpol
+Network policy details.
+
+Used for:
+Restrict pod-to-pod communication
+Zero-trust networking
+
+
+23. Storage
+kubectl get pv
+List persistent volumes.
+
+kubectl get pvc
+List persistent volume claims.
+
+kubectl describe pv pv-name
+PV details.
+
+kubectl describe pvc pvc-name
+PVC details.
+
+
+24. Service Accounts & RBAC
+kubectl get serviceaccounts
+List service accounts.
+
+kubectl create serviceaccount dev-sa
+Create SA.
+
+kubectl get clusterrole
+List cluster roles.
+
+kubectl get clusterrolebinding
+List bindings.
+
+Used for:
+✔️ Access control
+✔️ Least privilege
+✔️ Pod-to-AWS auth (IRSA)

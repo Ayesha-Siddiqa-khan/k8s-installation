@@ -20,3 +20,6 @@ kubectl apply -f custom-resources.yaml
 kubectl get pods -A
 
 kubeadm token create --print-join-command
+
+#kube config secerts find
+kubectl config view --raw 

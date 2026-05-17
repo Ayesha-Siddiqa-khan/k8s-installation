@@ -1,0 +1,80 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches: [main]
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+        version: "latest"
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build and push Docker image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Decode kubeconfig
+      run: |
+        printf "%s" "$KUBE_SECRET" | base64 --decode > /tmp/kubeconfig
+      env:
+        KUBE_SECRET: ${{ secrets.KUBE_CONFIG }}
+
+    - name: Ensure ECR image pull secret
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        kubectl --kubeconfig=/tmp/kubeconfig --insecure-skip-tls-verify \
+          create secret docker-registry ecr-registry \
+          --docker-server=$ECR_REGISTRY \
+          --docker-username=AWS \
+          --docker-password=$(aws ecr get-login-password --region $AWS_REGION) \
+          --dry-run=client -o yaml | \
+          kubectl --kubeconfig=/tmp/kubeconfig --insecure-skip-tls-verify apply -f -
+
+    - name: Deploy to Kubernetes
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Apply manifests (service + deployment)
+        kubectl --kubeconfig=/tmp/kubeconfig --insecure-skip-tls-verify apply -f k8s/
+        # Update the image
+        kubectl --kubeconfig=/tmp/kubeconfig --insecure-skip-tls-verify set image deployment/zeenkaar-app zeenkaar=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        kubectl --kubeconfig=/tmp/kubeconfig --insecure-skip-tls-verify rollout status deployment/zeenkaar-app
+
+    - name: Debug pod status
+      if: failure()
+      run: |
+        echo "=== Pod status ==="
+        kubectl --kubeconfig=/tmp/kubeconfig --insecure-skip-tls-verify get pods -l app=zeenkaar -o wide
+        echo "=== Pod events ==="
+        kubectl --kubeconfig=/tmp/kubeconfig --insecure-skip-tls-verify describe pod -l app=zeenkaar
+        echo "=== Previous logs ==="
+        kubectl --kubeconfig=/tmp/kubeconfig --insecure-skip-tls-verify logs -l app=zeenkaar --previous || true

@@ -2,6 +2,8 @@
 #!/bin/bash
 
 set -e
+sudo apt-get update
+sudo apt-get upgrade -y
 sudo swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf

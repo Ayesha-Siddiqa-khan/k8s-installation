@@ -22,5 +22,9 @@ kubectl get pods -A
 #Generate the join command for worker nodes
 kubeadm token create --print-join-command
 
+#Backup kube config and update the server IP address to the public IP of the control plane node
+cp ~/.kube/config ~/.kube/config.bak
+sed -i 's#server: https://10.0.1.27:6443#server: https://34.205.81.125:6443#g' ~/.kube/config
+
 #kube config secerts find
 kubectl config view --raw 

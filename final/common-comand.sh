@@ -66,5 +66,4 @@ sudo crictl config runtime-endpoint unix:///var/run/containerd/containerd.sock
 echo "Common Kubernetes setup completed successfully."
 SCRIPT
 
-chmod +x common-setup.sh
-./common-setup.sh
+

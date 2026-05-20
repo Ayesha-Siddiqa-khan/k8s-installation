@@ -57,4 +57,3 @@ cat ~/.kube/config
 EOF
 
 chmod +x ~/fix-cluster.sh
-echo "Script created!"

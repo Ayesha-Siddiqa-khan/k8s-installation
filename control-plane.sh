@@ -27,7 +27,9 @@ cp ~/.kube/config ~/.kube/config.bak
 sed -i 's#server: https://10.0.1.27:6443#server: https://34.205.81.125:6443#g' ~/.kube/config
 
 #kube config secerts find
-kubectl config view --raw 
+kubectl config view --raw
+#Encode the kubeconfig file in base64 for GitHub Actions secrets 
+cat /home/ubuntu/kubeconfig-public.b64
 
 
 #Prepare kubeconfig for GitHub Actions (if needed)

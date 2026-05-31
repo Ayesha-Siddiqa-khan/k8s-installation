@@ -28,3 +28,16 @@ sed -i 's#server: https://10.0.1.27:6443#server: https://34.205.81.125:6443#g' ~
 
 #kube config secerts find
 kubectl config view --raw 
+
+
+#Prepare kubeconfig for GitHub Actions (if needed)
+sudo cp /etc/kubernetes/admin.conf /etc/kubernetes/admin.github.conf
+sudo sed -i 's#https://10.0.1.235:6443#https://32.192.20.16:6443#g' /etc/kubernetes/admin.github.conf
+sudo grep "server:" /etc/kubernetes/admin.github.conf
+
+#Encode the kubeconfig file in base64 for GitHub Actions secrets
+sudo base64 -w 0 /etc/kubernetes/admin.github.conf > kubeconfig.github.b64
+cat kubeconfig.github.b64
+
+
+

@@ -40,6 +40,9 @@ sudo grep "server:" /etc/kubernetes/admin.github.conf
 #Encode the kubeconfig file in base64 for GitHub Actions secrets
 sudo base64 -w 0 /etc/kubernetes/admin.github.conf > kubeconfig.github.b64
 cat kubeconfig.github.b64
+# To decode and verify the kubeconfig file check ip address in the server field
+
+base64 -d /home/ubuntu/kubeconfig-private.b64 | grep "server:"
 
 
 

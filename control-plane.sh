@@ -30,6 +30,19 @@ sed -i 's#server: https://10.0.1.27:6443#server: https://34.205.81.125:6443#g' ~
 kubectl config view --raw
 #Encode the kubeconfig file in base64 for GitHub Actions secrets 
 cat /home/ubuntu/kubeconfig-public.b64
+base64 -d /home/ubuntu/kubeconfig-public.b64 | grep "server:"
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #Prepare kubeconfig for GitHub Actions (if needed)

@@ -137,3 +137,14 @@ kubectl get svc kagent-ui -n kagent -o jsonpath='{.spec.ports[0].nodePort}{"\n"}
 kubectl -n kagent logs deploy/kagent-tools --tail=200
 kubectl -n kagent logs deploy/kagent-controller --tail=200
 kubectl -n kagent logs deploy/k8s-agent --tail=200
+
+
+
+
+for cmd in curl wget unzip git node npm python3 pip3 java javac go ansible ansible-playbook helm containerd kubelet kubeadm kubectl; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    echo "[OK] $cmd -> $($cmd --version 2>&1 | head -n 1)"
+  else
+    echo "[MISSING] $cmd"
+  fi
+done

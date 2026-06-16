@@ -140,4 +140,5 @@ kubectl -n kagent logs deploy/k8s-agent --tail=200
 
 
 
-
+# uncordon
+kubectl uncordon ip-10-0-1-122

@@ -32,6 +32,16 @@ kubectl config view --raw
 cat /home/ubuntu/kubeconfig-public.b64
 base64 -d /home/ubuntu/kubeconfig-public.b64 | grep "server:"
 
+# Get Database URL from Terraform
+cd E:\github\progressive-delivery-fastapi\terraform
+terraform output -raw db_database_url
+
+
+
+# Get Redis URL from Terraform
+cd E:\github\progressive-delivery-fastapi\terraform
+terraform output -raw redis_url
+
 
 
 

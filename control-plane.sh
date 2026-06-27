@@ -8,6 +8,11 @@ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-addres
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+#Generate the join command for worker nodes
+kubeadm token create --print-join-command
+
+
 #Verify the cluster is up and running
 kubectl get nodes -o wide
 sudo crictl --runtime-endpoint unix:///var/run/containerd/containerd.sock ps -a
